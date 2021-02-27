@@ -1,7 +1,7 @@
 package fortos.service.implementation
 
 import fortos.model.BootContext
-import fortos.model.DefaultContext
+import fortos.model.constants.DefaultContext
 import fortos.service.ArgumentParser
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType

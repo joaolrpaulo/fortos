@@ -2,6 +2,8 @@ package fortos.modules
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import fortos.configurations.ObjectMapperConfiguration
+import fortos.engine.WorkloadEngine
+import fortos.engine.WorkloadEngineImpl
 import fortos.service.ArgumentParser
 import fortos.service.Bootstrap
 import fortos.service.WorkloadParser
@@ -14,5 +16,6 @@ val mainModule = module {
     single { ObjectMapperConfiguration().loadObjectMapper() }
     single<ArgumentParser> { ArgumentParserImpl() }
     single<WorkloadParser> { WorkloadParserImpl(get()) }
-    single<Bootstrap<Array<String>, Unit>> { BootstrapImpl(get(), get()) }
+    single<WorkloadEngine> { WorkloadEngineImpl() }
+    single<Bootstrap<Array<String>, Unit>> { BootstrapImpl(get(), get(), get()) }
 }
