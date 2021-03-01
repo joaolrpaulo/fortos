@@ -3,6 +3,8 @@ package fortos.model.processor
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import fortos.model.constants.WorkloadConstants
+import fortos.model.processor.action.RabbitMQProcessor
+import fortos.model.processor.timebased.ConstantTimerProcessor
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type", visible = true)
 @JsonSubTypes(value = [

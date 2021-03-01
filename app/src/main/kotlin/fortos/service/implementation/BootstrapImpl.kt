@@ -12,8 +12,8 @@ class BootstrapImpl(
 ): Bootstrap<Array<String>, Unit> {
     override fun call(cliArguments: Array<String>) {
         val context = argumentParser.call(cliArguments)
-        val workload = workloadParser.call(context.fileName)
+        val workloadContext = workloadParser.call(context.fileName)
 
-        workloadEngine.call(workload)
+        workloadEngine.call(workloadContext.workload)
     }
 }

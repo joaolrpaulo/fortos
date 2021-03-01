@@ -1,7 +1,7 @@
 package fortos.engine
 
-import fortos.model.WorkloadContext
+import fortos.model.processor.Processor
 
 interface WorkloadEngine {
-    fun call(workloadContext: WorkloadContext)
+    fun call(workloadContext: List<Processor>)
 }

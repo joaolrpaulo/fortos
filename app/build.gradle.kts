@@ -19,6 +19,7 @@ dependencies {
     // Main Dependencies
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlinx:kotlinx-cli:$kotlinxCliVersion")
     implementation("org.koin:koin-core:$koinVersion")
     implementation("org.koin:koin-logger-slf4j:$koinVersion")
