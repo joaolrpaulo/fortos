@@ -21,13 +21,17 @@ class WorkloadEngineImpl(
 
         workloadContext.forEach { workloadProcessor ->
             when {
-                instanceOf(workloadProcessor, BaseTimeEngineProcessor::class) -> logger.info("BaseTimeEngineProcessor")
-                instanceOf(workloadProcessor, BaseActionEngineProcessor::class) -> processAction(workloadProcessor).invoke()
+                instanceOf(workloadProcessor, BaseTimeEngineProcessor::class) -> prepareTimeProcessor(workloadProcessor)
+                instanceOf(workloadProcessor, BaseActionEngineProcessor::class) -> prepareActionProcessor(workloadProcessor).invoke()
             }
         }
     }
 
-    private fun processAction(workloadProcessor: Processor) : () -> Unit {
+    private fun prepareTimeProcessor(workloadProcessor: Processor) {
+        TODO("Not yet implemented.")
+    }
+
+    private fun prepareActionProcessor(workloadProcessor: Processor) : () -> Unit {
         val engineProcessor = workloadProcessor::class.findAnnotation<EngineProcessor>()!!.value
 
         return loadActionProcessor(engineProcessor).call(workloadProcessor)
@@ -38,4 +42,7 @@ class WorkloadEngineImpl(
 
     private fun loadActionProcessor(engineProcessor: KClass<out BaseEngineProcessor<*>>) =
         actionProcessors.first { processor -> engineProcessor.isSubclassOf(processor::class) }
+
+    private fun loadTimeProcessor(engineProcessor: KClass<out BaseEngineProcessor<*>>) =
+        timeProcessors.first { processor -> engineProcessor.isSubclassOf(processor::class) }
 }
