@@ -1,7 +1,7 @@
 package fortos.service
 
-import fortos.model.WorkloadContext
+import fortos.model.RuntimeContext
 
 interface WorkloadParser {
-    fun call(fileName: String): WorkloadContext
+    fun call(fileName: String): RuntimeContext
 }

@@ -1,14 +1,14 @@
-package fortos.model.processor.action
+package fortos.model.step.action
 
 import fortos.engine.processor.EngineProcessor
 import fortos.engine.processor.action.RabbitMQEngineProcessor
-import fortos.model.processor.Processor
+import fortos.model.step.Step
 
 @EngineProcessor(RabbitMQEngineProcessor::class)
-data class RabbitMQProcessor(
+data class RabbitMQStep(
     override val type: String,
     val credentials: RabbitMQCredentials
-): Processor(type, null)
+): Step(type, null)
 
 data class RabbitMQCredentials(
     val host: String,

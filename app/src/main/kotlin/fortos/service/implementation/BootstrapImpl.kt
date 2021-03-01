@@ -14,6 +14,6 @@ class BootstrapImpl(
         val context = argumentParser.call(cliArguments)
         val workloadContext = workloadParser.call(context.fileName)
 
-        workloadEngine.call(workloadContext.workload)
+        workloadEngine.call(workloadContext.pipeline)
     }
 }

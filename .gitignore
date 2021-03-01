@@ -65,4 +65,4 @@ distTmp/
 outTmp/
 /test.output
 /kotlin-native/dist
-fortos-workload.yml
+fortos-pipeline.yml

@@ -1,5 +1,5 @@
 package fortos.model.constants
 
 object DefaultContext {
-    const val WORKLOAD_FILE = "fortos-workload.yml"
+    const val FORTOS_PIPELINE_FILE = "fortos-pipeline.yml"
 }

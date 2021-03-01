@@ -14,7 +14,7 @@ class ArgumentParserImpl : ArgumentParser {
             ArgType.String,
             shortName = "f",
             description = "File containing the definition for the WTBD"
-        ).default(DefaultContext.WORKLOAD_FILE)
+        ).default(DefaultContext.FORTOS_PIPELINE_FILE)
 
         parser.parse(cliArguments)
 

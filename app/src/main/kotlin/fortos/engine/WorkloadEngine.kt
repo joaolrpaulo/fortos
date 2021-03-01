@@ -1,7 +1,7 @@
 package fortos.engine
 
-import fortos.model.processor.Processor
+import fortos.model.step.Step
 
 interface WorkloadEngine {
-    fun call(workloadContext: List<Processor>)
+    fun call(workloadContext: List<Step>)
 }
