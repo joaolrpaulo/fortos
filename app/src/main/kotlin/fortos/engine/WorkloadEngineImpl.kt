@@ -19,23 +19,34 @@ class WorkloadEngineImpl(
     override fun call(workloadContext: List<Step>) {
         logger.info("Engine has started!")
 
-        workloadContext.forEach { workloadProcessor ->
+        workloadContext.forEach { processor ->
             when {
-                instanceOf(workloadProcessor, BaseTimeEngineProcessor::class) -> prepareTimeProcessor(workloadProcessor)
-                instanceOf(workloadProcessor, BaseActionEngineProcessor::class) -> prepareActionProcessor(workloadProcessor).invoke()
+                instanceOf(processor, BaseTimeEngineProcessor::class) -> prepareTimeProcessor(processor)
+                instanceOf(processor, BaseActionEngineProcessor::class) -> prepareActionProcessor(processor).invoke()
             }
         }
     }
 
-    private fun prepareTimeProcessor(workloadProcessor: Step) {
-        TODO("Not yet implemented.")
+    private fun prepareTimeProcessor(engineProcessor: Step) {
+        val timeProcessor = loadTimeProcessor(
+            engineProcessor::class.findAnnotation<EngineProcessor>()!!.value
+        )
+
+        timeProcessor.call(engineProcessor)
+
+//        timeProcessor.workload?.forEach { processor ->
+//            val action =
+//                when (instanceOf(processor, BaseActionEngineProcessor::class)) {
+//                    true -> prepareActionProcessor(processor).invoke()
+//                    else -> error("Input cannot be processed since Time Processors can only define Actions and nothing more")
+//                }
+//
+//
+//        }
     }
 
-    private fun prepareActionProcessor(workloadProcessor: Step) : () -> Unit {
-        val engineProcessor = workloadProcessor::class.findAnnotation<EngineProcessor>()!!.value
-
-        return loadActionProcessor(engineProcessor).call(workloadProcessor)
-    }
+    private fun prepareActionProcessor(engineProcessor: Step) =
+        loadActionProcessor(engineProcessor::class.findAnnotation<EngineProcessor>()!!.value).call(engineProcessor)
 
     private fun instanceOf(processor: Step, engineProcessor: KClass<out BaseEngineProcessor<*>>) =
         processor::class.findAnnotation<EngineProcessor>()?.value?.isSubclassOf(engineProcessor) ?: false
