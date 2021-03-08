@@ -3,9 +3,10 @@ val log4jVersion = "1.7.29"
 val apacheLog4JVersion = "2.14.0"
 val kotlinxCliVersion = "0.3.1"
 val jacksonVersion = "2.12.+"
+val kotlinXCoroutinesVersion = "1.4.30"
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.4.20"
+    id("org.jetbrains.kotlin.jvm") version "1.4.30"
 
     application
 }
@@ -20,6 +21,7 @@ dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
     implementation("org.jetbrains.kotlinx:kotlinx-cli:$kotlinxCliVersion")
     implementation("org.koin:koin-core:$koinVersion")
     implementation("org.koin:koin-logger-slf4j:$koinVersion")

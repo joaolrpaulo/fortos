@@ -6,7 +6,7 @@ import java.time.Instant
 class SingleTimeExecutionEngineProcessor : BaseTimeEngineProcessor {
     private val startedAt = Instant.now()
 
-    override fun call(input: Step): TimeEngineProcessorData {
+    override fun call(input: Step): List<TimeEngineProcessorData> {
         TODO("Not yet implemented")
     }
 }

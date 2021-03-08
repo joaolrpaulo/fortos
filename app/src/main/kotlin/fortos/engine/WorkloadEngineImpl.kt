@@ -6,6 +6,7 @@ import fortos.engine.processor.action.BaseActionEngineProcessor
 import fortos.engine.processor.time.BaseTimeEngineProcessor
 import fortos.model.step.Step
 import org.slf4j.LoggerFactory
+import kotlin.concurrent.thread
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.isSubclassOf
@@ -21,28 +22,36 @@ class WorkloadEngineImpl(
 
         workloadContext.forEach { processor ->
             when {
-                instanceOf(processor, BaseTimeEngineProcessor::class) -> prepareTimeProcessor(processor)
+                instanceOf(processor, BaseTimeEngineProcessor::class) -> prepareTimeProcessor(processor).invoke()
                 instanceOf(processor, BaseActionEngineProcessor::class) -> prepareActionProcessor(processor).invoke()
             }
         }
     }
 
-    private fun prepareTimeProcessor(engineProcessor: Step) {
+    private fun prepareTimeProcessor(engineProcessor: Step) : () -> Unit {
         val timeProcessor = loadTimeProcessor(
             engineProcessor::class.findAnnotation<EngineProcessor>()!!.value
         )
 
-        timeProcessor.call(engineProcessor)
+        val timer = timeProcessor.call(engineProcessor)
+        val executors = engineProcessor.workload?.map { processor ->
+            when (instanceOf(processor, BaseActionEngineProcessor::class)) {
+                true -> prepareActionProcessor(processor)
+                else -> error("Input cannot be processed since Time Processors can only define Actions and nothing more")
+            }
+        } ?: emptyList()
 
-//        timeProcessor.workload?.forEach { processor ->
-//            val action =
-//                when (instanceOf(processor, BaseActionEngineProcessor::class)) {
-//                    true -> prepareActionProcessor(processor).invoke()
-//                    else -> error("Input cannot be processed since Time Processors can only define Actions and nothing more")
-//                }
-//
-//
-//        }
+        return {
+            timer.forEach {
+                thread(start = true) {
+                    while(it.shouldProceed()) {
+                        it.execute { executors.forEach { it.invoke() } }
+
+                        it.wait()
+                    }
+                }
+            }
+        }
     }
 
     private fun prepareActionProcessor(engineProcessor: Step) =
