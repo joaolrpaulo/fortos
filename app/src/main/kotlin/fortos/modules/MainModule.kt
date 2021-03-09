@@ -3,6 +3,7 @@ package fortos.modules
 import fortos.configurations.ObjectMapperConfiguration
 import fortos.engine.WorkloadEngine
 import fortos.engine.WorkloadEngineImpl
+import fortos.engine.processor.action.LogActionProcessor
 import fortos.engine.processor.action.RabbitMQEngineProcessor
 import fortos.engine.processor.time.ConstantTimerEngineProcessor
 import fortos.service.ArgumentParser
@@ -16,7 +17,7 @@ import org.koin.dsl.module
 
 val mainModule = module {
     single { ObjectMapperConfiguration().loadObjectMapper() }
-    single(named("actionProcessors")) { listOf(RabbitMQEngineProcessor()) }
+    single(named("actionProcessors")) { listOf(RabbitMQEngineProcessor(), LogActionProcessor()) }
     single(named("timeProcessors")) { listOf(ConstantTimerEngineProcessor()) }
     single<ArgumentParser> { ArgumentParserImpl() }
     single<WorkloadParser> { WorkloadParserImpl(get()) }

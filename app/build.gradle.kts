@@ -6,7 +6,7 @@ val jacksonVersion = "2.12.+"
 val kotlinXCoroutinesVersion = "1.4.30"
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.4.30"
+    kotlin("jvm") version "1.4.30"
 
     application
 }

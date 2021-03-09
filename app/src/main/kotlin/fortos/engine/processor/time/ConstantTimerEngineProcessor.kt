@@ -18,9 +18,9 @@ class ConstantTimerEngineProcessor : BaseTimeEngineProcessor {
 
         return List(timerDefinition.threads.toInt()) {
             TimeEngineProcessorData(
-                { if (transactionsPerformed.incrementAndGet() <= timerDefinition.transactions) it() },
-                { Instant.now().isBefore(endTime) },
-                { Thread.sleep(waitTime) }
+                execute = { if (transactionsPerformed.incrementAndGet() <= timerDefinition.transactions) it() },
+                shouldProceed = { Instant.now().isBefore(endTime) },
+                wait = { Thread.sleep(waitTime) }
             )
         }
     }

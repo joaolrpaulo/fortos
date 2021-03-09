@@ -22,9 +22,10 @@ class WorkloadEngineImpl(
 
         workloadContext.forEach { processor ->
             when {
-                instanceOf(processor, BaseTimeEngineProcessor::class) -> prepareTimeProcessor(processor).invoke()
-                instanceOf(processor, BaseActionEngineProcessor::class) -> prepareActionProcessor(processor).invoke()
-            }
+                instanceOf(processor, BaseTimeEngineProcessor::class) -> prepareTimeProcessor(processor)
+                instanceOf(processor, BaseActionEngineProcessor::class) -> prepareActionProcessor(processor)
+                else -> error("Input cannot be processed since only Action / Timer Processors are allowed")
+            }.invoke()
         }
     }
 
@@ -33,7 +34,7 @@ class WorkloadEngineImpl(
             engineProcessor::class.findAnnotation<EngineProcessor>()!!.value
         )
 
-        val timer = timeProcessor.call(engineProcessor)
+        val timerDefinitions = timeProcessor.call(engineProcessor)
         val executors = engineProcessor.workload?.map { processor ->
             when (instanceOf(processor, BaseActionEngineProcessor::class)) {
                 true -> prepareActionProcessor(processor)
@@ -42,13 +43,9 @@ class WorkloadEngineImpl(
         } ?: emptyList()
 
         return {
-            timer.forEach {
-                thread(start = true) {
-                    while(it.shouldProceed()) {
-                        it.execute { executors.forEach { it.invoke() } }
-
-                        it.wait()
-                    }
+            timerDefinitions.forEachIndexed { idx, timer ->
+                thread(name = "fortos-engine-$idx") {
+                    timeProcessor.execute(timer, executors)
                 }
             }
         }
