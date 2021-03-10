@@ -18,8 +18,6 @@ class WorkloadEngineImpl(
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     override fun call(workloadContext: List<Step>) {
-        logger.info("Engine has started!")
-
         orchestrate(workloadContext).forEach { it.invoke() }
     }
 
@@ -27,7 +25,13 @@ class WorkloadEngineImpl(
         val timeProcessor = loadTimeProcessor(engineProcessor::class.findAnnotation<EngineProcessor>()!!.value)
         val timerDefinitions = timeProcessor.call(engineProcessor)
         val executors = orchestrate(engineProcessor.workload ?: emptyList())
-
+    
+        if (logger.isDebugEnabled) {
+            val executorsRegistered = timerDefinitions.map { it.id }
+            
+            logger.debug("Registered executors for type ${timeProcessor::class.simpleName} are: $executorsRegistered")
+        }
+        
         return {
             timerDefinitions.forEachIndexed { idx, timer ->
                 thread(name = "fortos-engine-$idx") {

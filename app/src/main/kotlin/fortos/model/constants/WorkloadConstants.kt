@@ -7,4 +7,5 @@ object WorkloadConstants {
     
     // Timers
     const val CONSTANT_TIME_PROCESSOR = "constant-time"
+    const val SINGLE_TIME_PROCESSOR = "single-time"
 }
