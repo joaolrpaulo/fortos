@@ -11,5 +11,4 @@ data class ConstantTimerStep(
     val transactions: Long,
     val duration: Long,
     val threads: Long,
-): Step(type, workload)
-
+) : Step(type, workload)

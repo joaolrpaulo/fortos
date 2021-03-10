@@ -6,7 +6,7 @@ import kotlin.concurrent.thread
 
 interface BaseTimeEngineProcessor : BaseEngineProcessor<List<TimeEngineProcessorData>> {
     fun execute(timeEngineProcessorData: TimeEngineProcessorData, executors: List<() -> Any>): List<Any> {
-        while(timeEngineProcessorData.shouldProceed()) {
+        while (timeEngineProcessorData.shouldProceed()) {
             timeEngineProcessorData.execute {
                 executors.forEachIndexed { internalIdx, executor ->
                     thread(name = "time-executor-${timeEngineProcessorData.id}-internal-$internalIdx") {
@@ -14,10 +14,10 @@ interface BaseTimeEngineProcessor : BaseEngineProcessor<List<TimeEngineProcessor
                     }
                 }
             }
-    
+
             timeEngineProcessorData.wait()
         }
-        
+
         return emptyList()
     }
 }

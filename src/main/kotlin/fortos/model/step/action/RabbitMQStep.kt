@@ -8,7 +8,7 @@ import fortos.model.step.Step
 data class RabbitMQStep(
     override val type: String,
     val credentials: RabbitMQCredentials
-): Step(type, null)
+) : Step(type, null)
 
 data class RabbitMQCredentials(
     val host: String,

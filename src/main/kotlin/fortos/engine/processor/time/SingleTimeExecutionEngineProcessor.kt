@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class SingleTimeExecutionEngineProcessor : BaseTimeEngineProcessor {
     private val transactionsPerformed = AtomicInteger()
-    
+
     override fun call(input: Step): List<TimeEngineProcessorData> {
         return listOf(
             TimeEngineProcessorData(

@@ -9,6 +9,7 @@ val mockitoKtVersion = "2.2.0"
 
 plugins {
     kotlin("jvm") version "1.4.30"
+    id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
 }
 
 repositories {
@@ -43,7 +44,7 @@ tasks {
             includeEngines("spek2")
         }
     }
-    
+
     withType<Jar> {
         manifest { attributes["Main-Class"] = "fortos.AppKt" }
         configurations["compileClasspath"].forEach { from(zipTree(it.absoluteFile)) }

@@ -14,24 +14,24 @@ import kotlin.reflect.full.isSubclassOf
 class WorkloadEngineImpl(
     private val actionProcessors: List<BaseActionEngineProcessor>,
     private val timeProcessors: List<BaseTimeEngineProcessor>,
-)  : WorkloadEngine {
+) : WorkloadEngine {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     override fun call(workloadContext: List<Step>) {
         orchestrate(workloadContext).forEach { it.invoke() }
     }
 
-    private fun prepareTimeProcessor(engineProcessor: Step) : () -> Unit {
+    private fun prepareTimeProcessor(engineProcessor: Step): () -> Unit {
         val timeProcessor = loadTimeProcessor(engineProcessor::class.findAnnotation<EngineProcessor>()!!.value)
         val timerDefinitions = timeProcessor.call(engineProcessor)
         val executors = orchestrate(engineProcessor.workload ?: emptyList())
-    
+
         if (logger.isDebugEnabled) {
             val executorsRegistered = timerDefinitions.map { it.id }
-            
+
             logger.debug("Registered executors for type ${timeProcessor::class.simpleName} are: $executorsRegistered")
         }
-        
+
         return {
             timerDefinitions.forEachIndexed { idx, timer ->
                 thread(name = "fortos-engine-$idx") {
