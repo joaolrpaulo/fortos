@@ -20,27 +20,13 @@ class WorkloadEngineImpl(
     override fun call(workloadContext: List<Step>) {
         logger.info("Engine has started!")
 
-        workloadContext.forEach { processor ->
-            when {
-                instanceOf(processor, BaseTimeEngineProcessor::class) -> prepareTimeProcessor(processor)
-                instanceOf(processor, BaseActionEngineProcessor::class) -> prepareActionProcessor(processor)
-                else -> error("Input cannot be processed since only Action / Timer Processors are allowed")
-            }.invoke()
-        }
+        orchestrate(workloadContext).forEach { it.invoke() }
     }
 
     private fun prepareTimeProcessor(engineProcessor: Step) : () -> Unit {
-        val timeProcessor = loadTimeProcessor(
-            engineProcessor::class.findAnnotation<EngineProcessor>()!!.value
-        )
-
+        val timeProcessor = loadTimeProcessor(engineProcessor::class.findAnnotation<EngineProcessor>()!!.value)
         val timerDefinitions = timeProcessor.call(engineProcessor)
-        val executors = engineProcessor.workload?.map { processor ->
-            when (instanceOf(processor, BaseActionEngineProcessor::class)) {
-                true -> prepareActionProcessor(processor)
-                else -> error("Input cannot be processed since Time Processors can only define Actions and nothing more")
-            }
-        } ?: emptyList()
+        val executors = orchestrate(engineProcessor.workload ?: emptyList())
 
         return {
             timerDefinitions.forEachIndexed { idx, timer ->
@@ -53,6 +39,15 @@ class WorkloadEngineImpl(
 
     private fun prepareActionProcessor(engineProcessor: Step) =
         loadActionProcessor(engineProcessor::class.findAnnotation<EngineProcessor>()!!.value).call(engineProcessor)
+
+    private fun orchestrate(workloadContext: List<Step>) =
+        workloadContext.map { processor ->
+            when {
+                instanceOf(processor, BaseTimeEngineProcessor::class) -> prepareTimeProcessor(processor)
+                instanceOf(processor, BaseActionEngineProcessor::class) -> prepareActionProcessor(processor)
+                else -> error("Input cannot be processed since only Action / Timer Processors are allowed")
+            }
+        }
 
     private fun instanceOf(processor: Step, engineProcessor: KClass<out BaseEngineProcessor<*>>) =
         processor::class.findAnnotation<EngineProcessor>()?.value?.isSubclassOf(engineProcessor) ?: false
