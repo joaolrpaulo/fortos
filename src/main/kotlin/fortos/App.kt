@@ -2,7 +2,6 @@ package fortos
 
 import fortos.modules.mainModule
 import fortos.service.Bootstrap
-import fortos.service.implementation.BootstrapImpl
 import org.koin.core.component.KoinApiExtension
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

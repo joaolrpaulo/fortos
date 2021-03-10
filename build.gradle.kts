@@ -7,8 +7,6 @@ val kotlinXCoroutinesVersion = "1.4.30"
 
 plugins {
     kotlin("jvm") version "1.4.30"
-
-    application
 }
 
 repositories {
@@ -36,6 +34,9 @@ dependencies {
     testImplementation("org.koin:koin-test:$koinVersion")
 }
 
-application {
-    mainClass.set("fortos.AppKt")
+tasks.withType<Jar> {
+    manifest { attributes["Main-Class"] = "fortos.AppKt" }
+    configurations["compileClasspath"].forEach { from(zipTree(it.absoluteFile)) }
 }
+
+version = "0.0.1-alpha"

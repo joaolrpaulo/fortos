@@ -1,7 +1,6 @@
 package fortos.engine.processor.time
 
 import fortos.model.step.Step
-import java.time.Instant
 import java.util.concurrent.atomic.AtomicInteger
 
 class SingleTimeExecutionEngineProcessor : BaseTimeEngineProcessor {
