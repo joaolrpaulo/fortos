@@ -4,8 +4,8 @@ val apacheLog4JVersion = "2.14.0"
 val kotlinxCliVersion = "0.3.1"
 val jacksonVersion = "2.12.+"
 val kotlinXCoroutinesVersion = "1.4.30"
-val spekVersion = "2.0.15"
 val mockitoKtVersion = "2.2.0"
+val junitVersion = "5.7.1"
 
 plugins {
     kotlin("jvm") version "1.4.30"
@@ -34,14 +34,16 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     testImplementation("org.koin:koin-test:$koinVersion")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKtVersion")
-    testImplementation("org.spekframework.spek2:spek-dsl-jvm:$spekVersion")
-    testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:$spekVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 }
 
 tasks {
     test {
-        useJUnitPlatform {
-            includeEngines("spek2")
+        useJUnitPlatform()
+
+        testLogging {
+            events("passed", "skipped", "failed")
         }
     }
 

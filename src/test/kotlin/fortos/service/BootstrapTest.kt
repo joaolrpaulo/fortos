@@ -4,15 +4,15 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import fortos.engine.WorkloadEngine
-import fortos.helpers.itShould
 import fortos.model.BootContext
 import fortos.model.RuntimeContext
 import fortos.model.constants.DefaultContext
 import fortos.service.implementation.BootstrapImpl
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 
-class BootstrapTest : Spek({
+class BootstrapTest {
 
     val argumentParser = mock<ArgumentParser>()
     val workloadParser = mock<WorkloadParser>()
@@ -20,18 +20,20 @@ class BootstrapTest : Spek({
 
     val subject = BootstrapImpl(argumentParser, workloadParser, workloadEngine)
 
-    describe(".call") {
-        context("when the file is a valid YML") {
-            itShould("call the engine method") {
-                val bootContext = BootContext(DefaultContext.FORTOS_PIPELINE_FILE)
+    @DisplayName("When the file is valid")
+    @Nested
+    inner class FileIsValid {
 
-                whenever(argumentParser.call(emptyArray())).thenReturn(bootContext)
-                whenever(workloadParser.call(bootContext.fileName)).thenReturn(RuntimeContext(emptyList()))
+        @Test
+        fun `it should call boot the engine`() {
+            val bootContext = BootContext(DefaultContext.FORTOS_PIPELINE_FILE)
 
-                subject.call(emptyArray())
+            whenever(argumentParser.call(emptyArray())).thenReturn(bootContext)
+            whenever(workloadParser.call(bootContext.fileName)).thenReturn(RuntimeContext(emptyList()))
 
-                verify(workloadEngine).call(emptyList())
-            }
+            subject.call(emptyArray())
+
+            verify(workloadEngine).call(emptyList())
         }
     }
-})
+}

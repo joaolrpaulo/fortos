@@ -1,37 +1,40 @@
 package fortos.service
 
-import fortos.helpers.itShould
 import fortos.model.BootContext
 import fortos.model.constants.DefaultContext
 import fortos.service.implementation.ArgumentParserImpl
-import org.spekframework.spek2.Spek
-import org.spekframework.spek2.style.specification.describe
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-class ArgumentParserTest : Spek({
+class ArgumentParserTest {
     val subject = ArgumentParserImpl()
 
-    describe(".call") {
-        context("when all the required arguments are given") {
-            itShould("respect them and return the proper BootContext Object") {
-                val arguments = arrayOf("-f", "fileName.txt")
+    @DisplayName("when all the required arguments are given")
+    @Nested
+    inner class WhenAllArgumentsAreGiven {
 
-                assertEquals(
-                    expected = BootContext(fileName = "fileName.txt"),
-                    actual = subject.call(arguments)
-                )
-            }
-        }
+        @Test
+        fun `it should respect them and return the proper BootContext Object`() {
+            val arguments = arrayOf("-f", "fileName.txt")
 
-        context("when there is a missing argument") {
-            context("and this argument is the fileName") {
-                itShould("use the default one") {
-                    assertEquals(
-                        expected = BootContext(fileName = DefaultContext.FORTOS_PIPELINE_FILE),
-                        actual = subject.call(emptyArray())
-                    )
-                }
-            }
+            assertEquals(
+                expected = BootContext(fileName = "fileName.txt"),
+                actual = subject.call(arguments)
+            )
         }
     }
-})
+
+    @DisplayName("when there is a missing argument")
+    @Nested
+    inner class WhenOneArgumentIsNotGiven {
+        @Test
+        fun `and this argument is the fileName, it should respect them and return the proper BootContext Object`() {
+            assertEquals(
+                expected = BootContext(fileName = DefaultContext.FORTOS_PIPELINE_FILE),
+                actual = subject.call(emptyArray())
+            )
+        }
+    }
+}
