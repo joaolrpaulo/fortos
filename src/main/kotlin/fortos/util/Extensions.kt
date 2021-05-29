@@ -1,4 +1,4 @@
-package fortos.utils
+package fortos.util
 
 object Extensions {
     private val randomCharPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')

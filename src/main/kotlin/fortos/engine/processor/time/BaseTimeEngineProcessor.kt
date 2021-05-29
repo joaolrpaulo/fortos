@@ -1,7 +1,8 @@
 package fortos.engine.processor.time
 
 import fortos.engine.processor.BaseEngineProcessor
-import fortos.utils.Extensions
+import fortos.util.Extensions
+import java.util.concurrent.CountDownLatch
 import kotlin.concurrent.thread
 
 interface BaseTimeEngineProcessor : BaseEngineProcessor<List<TimeEngineProcessorData>> {
@@ -27,4 +28,5 @@ data class TimeEngineProcessorData(
     val execute: (() -> Any) -> Any,
     val shouldProceed: () -> Boolean,
     val wait: () -> Unit,
+    val submittedJobsCount: Int = 0
 )

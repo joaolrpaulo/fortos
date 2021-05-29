@@ -11,7 +11,8 @@ class SingleTimeExecutionEngineProcessor : BaseTimeEngineProcessor {
             TimeEngineProcessorData(
                 execute = { if (transactionsPerformed.incrementAndGet() <= 1L) it() },
                 shouldProceed = { transactionsPerformed.get() <= 1L },
-                wait = { }
+                wait = { },
+                submittedJobsCount = 1
             )
         )
     }

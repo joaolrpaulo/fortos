@@ -1,5 +1,6 @@
 package fortos.model.step.action
 
+import com.fasterxml.jackson.databind.JsonNode
 import fortos.engine.processor.EngineProcessor
 import fortos.engine.processor.action.RabbitMQEngineProcessor
 import fortos.model.step.Step
@@ -7,7 +8,11 @@ import fortos.model.step.Step
 @EngineProcessor(RabbitMQEngineProcessor::class)
 data class RabbitMQStep(
     override val type: String,
-    val credentials: RabbitMQCredentials
+    val credentials: RabbitMQCredentials,
+    val routingKey: String,
+    val exchange: String,
+    val queue: String,
+    val event: JsonNode,
 ) : Step(type, null)
 
 data class RabbitMQCredentials(

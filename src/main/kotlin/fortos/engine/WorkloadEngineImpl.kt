@@ -6,6 +6,11 @@ import fortos.engine.processor.action.BaseActionEngineProcessor
 import fortos.engine.processor.time.BaseTimeEngineProcessor
 import fortos.model.step.Step
 import org.slf4j.LoggerFactory
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
@@ -17,8 +22,15 @@ class WorkloadEngineImpl(
 ) : WorkloadEngine {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
+    private val tearDownHandlers = mutableListOf<()-> Unit>()
+    private val submittedThreads = AtomicInteger()
+
     override fun call(workloadContext: List<Step>) {
-        orchestrate(workloadContext).forEach { it.invoke() }
+        val workload = orchestrate(workloadContext)
+
+        workload.forEach { it.invoke() }
+
+        tearDownHandlers.forEach { it.invoke() }
     }
 
     private fun prepareTimeProcessor(engineProcessor: Step): () -> Unit {
@@ -32,11 +44,11 @@ class WorkloadEngineImpl(
             logger.debug("Registered executors for type ${timeProcessor::class.simpleName} are: $executorsRegistered")
         }
 
+        submittedThreads.addAndGet(timerDefinitions.fold(0) { acc, current -> acc + current.submittedJobsCount})
+
         return {
             timerDefinitions.forEachIndexed { idx, timer ->
-                thread(name = "fortos-engine-$idx") {
-                    timeProcessor.execute(timer, executors)
-                }
+                thread(name = "fortos-engine-$idx") { timeProcessor.execute(timer, executors) }
             }
         }
     }
@@ -48,7 +60,9 @@ class WorkloadEngineImpl(
         workloadContext.map { processor ->
             when {
                 instanceOf(processor, BaseTimeEngineProcessor::class) -> prepareTimeProcessor(processor)
-                instanceOf(processor, BaseActionEngineProcessor::class) -> prepareActionProcessor(processor)
+                instanceOf(processor, BaseActionEngineProcessor::class) -> {
+                    prepareActionProcessor(processor).let { tearDownHandlers.add(it.teardown); it.execute }
+                }
                 else -> error("Input cannot be processed since only Action / Timer Processors are allowed")
             }
         }

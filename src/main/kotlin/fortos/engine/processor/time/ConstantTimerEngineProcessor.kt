@@ -18,7 +18,8 @@ class ConstantTimerEngineProcessor : BaseTimeEngineProcessor {
             TimeEngineProcessorData(
                 execute = { if (transactionsPerformed.incrementAndGet() <= maxTransactions) it() },
                 shouldProceed = { Instant.now().isBefore(endTime) && transactionsPerformed.get() <= maxTransactions.toInt() },
-                wait = { Thread.sleep(waitTime.toLong()) }
+                wait = { Thread.sleep(waitTime.toLong()) },
+                submittedJobsCount = maxTransactions.toInt()
             )
         }
     }
