@@ -7,12 +7,13 @@ import fortos.model.step.Step
 @EngineProcessor(RabbitMQEngineProcessor::class)
 data class RabbitMQStep(
     override val type: String,
-    val credentials: RabbitMQCredentials
+    val credentials: RabbitMQCredentials = RabbitMQCredentials(),
+    val queueName: String = "test"
 ) : Step(type, null)
 
 data class RabbitMQCredentials(
-    val host: String,
+    val host: String = "localhost",
     val port: Int = 5672,
-    val user: String,
-    val password: String
+    val user: String = "guest",
+    val password: String = "guest"
 )

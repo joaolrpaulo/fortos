@@ -6,6 +6,7 @@ val jacksonVersion = "2.12.+"
 val kotlinXCoroutinesVersion = "1.4.30"
 val mockitoKtVersion = "2.2.0"
 val junitVersion = "5.7.1"
+val rabbitmqVersion = "5.9.0"
 
 plugins {
     kotlin("jvm") version "1.4.30"
@@ -29,6 +30,8 @@ dependencies {
     implementation("org.slf4j:slf4j-log4j12:$log4jVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
+    implementation("com.rabbitmq:amqp-client:$rabbitmqVersion")
+
     // Test Dependencies
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")

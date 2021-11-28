@@ -1,4 +1,4 @@
-package fortos.modules
+package fortos.module
 
 import fortos.configurations.ObjectMapperConfiguration
 import fortos.engine.WorkloadEngine
