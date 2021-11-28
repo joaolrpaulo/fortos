@@ -6,5 +6,6 @@ import fortos.model.step.Step
 
 @EngineProcessor(LogActionProcessor::class)
 data class LogStep(
-    override val type: String
+    override val type: String,
+    val message: String = "Just logging my presence here!"
 ) : Step(type, null)
