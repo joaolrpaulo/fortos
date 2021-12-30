@@ -1,8 +1,10 @@
 val koinVersion = "3.1.4"
+val koinLogger = "2.2.2"
+val slf4jVersion = "1.7.32"
 val log4jVersion = "2.17.1"
 val apacheLog4JVersion = "2.14.0"
 val kotlinxCliVersion = "0.3.4"
-val jacksonVersion = "2.13.+"
+val jacksonVersion = "2.13.1"
 val kotlinXCoroutinesVersion = "1.6.0"
 val mockitoKtVersion = "2.2.0"
 val junitVersion = "5.8.2"
@@ -27,8 +29,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-cli:$kotlinxCliVersion")
     implementation("io.insert-koin:koin-core:$koinVersion")
     implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
-    implementation("org.apache.logging.log4j:log4j-api:$log4jVersion")
-    implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
+    implementation("org.apache.logging.log4j:log4j:$log4jVersion")
+    implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
     implementation("com.rabbitmq:amqp-client:$rabbitmqVersion")
