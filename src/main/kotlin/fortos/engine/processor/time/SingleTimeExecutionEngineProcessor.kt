@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger
 class SingleTimeExecutionEngineProcessor : BaseTimeEngineProcessor {
     private val transactionsPerformed = AtomicInteger()
 
-    override fun call(input: Step): List<TimeEngineProcessorData> {
+    override fun call(input: Any?): List<TimeEngineProcessorData> {
         return listOf(
             TimeEngineProcessorData(
                 execute = { if (transactionsPerformed.incrementAndGet() <= 1L) it() },

@@ -18,10 +18,8 @@ import org.koin.dsl.module
 
 val mainModule = module {
     single { ObjectMapperConfiguration().loadObjectMapper() }
-    single(named("actionProcessors")) { listOf(RabbitMQEngineProcessor(), LogActionProcessor()) }
-    single(named("timeProcessors")) { listOf(ConstantTimerEngineProcessor(), SingleTimeExecutionEngineProcessor()) }
     single<ArgumentParser> { ArgumentParserImpl() }
     single<WorkloadParser> { WorkloadParserImpl(get()) }
-    single<WorkloadEngine> { WorkloadEngineImpl(get(named("actionProcessors")), get(named("timeProcessors"))) }
+    single<WorkloadEngine> { WorkloadEngineImpl() }
     single<Bootstrap<Array<String>, Unit>> { BootstrapImpl(get(), get(), get()) }
 }

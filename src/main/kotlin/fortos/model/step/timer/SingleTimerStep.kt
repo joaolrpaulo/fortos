@@ -8,4 +8,4 @@ import fortos.model.step.Step
 data class SingleTimerStep(
     override val type: String,
     override val workload: List<Step>,
-) : Step(type, workload)
+) : Step(type, workload, null, null)

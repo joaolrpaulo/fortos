@@ -8,7 +8,11 @@ import fortos.model.step.Step
 data class ConstantTimerStep(
     override val type: String,
     override val workload: List<Step>,
+    override val executionMetadata: ConstantTimerExecutionMetadata
+) : Step(type, workload, null, executionMetadata)
+
+data class ConstantTimerExecutionMetadata(
     val transactions: Long,
     val duration: Long,
     val threads: Long,
-) : Step(type, workload)
+)

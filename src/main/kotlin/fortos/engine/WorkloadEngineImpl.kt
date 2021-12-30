@@ -1,5 +1,6 @@
 package fortos.engine
 
+import fortos.engine.processor.BaseEngineLambdas
 import fortos.engine.processor.BaseEngineProcessor
 import fortos.engine.processor.EngineProcessor
 import fortos.engine.processor.action.BaseActionEngineProcessor
@@ -10,21 +11,19 @@ import kotlin.concurrent.thread
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.full.primaryConstructor
 
-class WorkloadEngineImpl(
-    private val actionProcessors: List<BaseActionEngineProcessor>,
-    private val timeProcessors: List<BaseTimeEngineProcessor>,
-) : WorkloadEngine {
+class WorkloadEngineImpl : WorkloadEngine {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    override fun call(workloadContext: List<Step>) {
-        orchestrate(workloadContext).forEach { it.invoke() }
+    override fun call(stepList: List<Step>) {
+        orchestrate(stepList).forEach { it.runtime.invoke() }
     }
 
-    private fun prepareTimeProcessor(engineProcessor: Step): () -> Unit {
-        val timeProcessor = loadTimeProcessor(engineProcessor::class.findAnnotation<EngineProcessor>()!!.value)
-        val timerDefinitions = timeProcessor.call(engineProcessor)
-        val executors = orchestrate(engineProcessor.workload ?: emptyList())
+    private fun prepareTimeProcessor(step: Step): BaseEngineLambdas {
+        val timeProcessor = loadTimeProcessor(step)
+        val timerDefinitions = timeProcessor.call(step.executionMetadata)
+        val executors = orchestrate(step.workload ?: emptyList())
 
         if (logger.isDebugEnabled) {
             val executorsRegistered = timerDefinitions.map { it.id }
@@ -32,33 +31,39 @@ class WorkloadEngineImpl(
             logger.debug("Registered executors for type ${timeProcessor::class.simpleName} are: $executorsRegistered")
         }
 
-        return {
-            timerDefinitions.forEachIndexed { idx, timer ->
-                thread(name = "fortos-engine-$idx") {
-                    timeProcessor.execute(timer, executors)
+        return BaseEngineLambdas(
+            {
+                timerDefinitions.forEachIndexed { idx, timer ->
+                    thread(name = "fortos-engine-$idx") {
+                        timeProcessor.execute(timer, executors)
+                    }
                 }
-            }
-        }
+            },
+            { }
+        )
     }
 
-    private fun prepareActionProcessor(engineProcessor: Step) =
-        loadActionProcessor(engineProcessor::class.findAnnotation<EngineProcessor>()!!.value).call(engineProcessor)
+    private fun prepareActionProcessor(step: Step) : BaseActionEngineProcessor {
+        val engineProcessorKClass = step::class.findAnnotation<EngineProcessor>()!!.value
 
-    private fun orchestrate(workloadContext: List<Step>) =
-        workloadContext.map { processor ->
+        return engineProcessorKClass.primaryConstructor!!.call(step.setupMetadata) as BaseActionEngineProcessor
+    }
+
+    private fun loadTimeProcessor(step: Step) : BaseTimeEngineProcessor {
+        val engineProcessorKClass = step::class.findAnnotation<EngineProcessor>()!!.value
+
+        return engineProcessorKClass.primaryConstructor!!.call() as BaseTimeEngineProcessor
+    }
+
+    private fun orchestrate(stepList: List<Step>) =
+        stepList.map { step ->
             when {
-                instanceOf(processor, BaseTimeEngineProcessor::class) -> prepareTimeProcessor(processor)
-                instanceOf(processor, BaseActionEngineProcessor::class) -> prepareActionProcessor(processor)
+                instanceOf(step, BaseTimeEngineProcessor::class) -> prepareTimeProcessor(step)
+                instanceOf(step, BaseActionEngineProcessor::class) -> prepareActionProcessor(step).call(step.executionMetadata)
                 else -> error("Input cannot be processed since only Action / Timer Processors are allowed")
             }
         }
 
     private fun instanceOf(processor: Step, engineProcessor: KClass<out BaseEngineProcessor<*>>) =
         processor::class.findAnnotation<EngineProcessor>()?.value?.isSubclassOf(engineProcessor) ?: false
-
-    private fun loadActionProcessor(engineProcessor: KClass<out BaseEngineProcessor<*>>) =
-        actionProcessors.first { processor -> engineProcessor.isSubclassOf(processor::class) }
-
-    private fun loadTimeProcessor(engineProcessor: KClass<out BaseEngineProcessor<*>>) =
-        timeProcessors.first { processor -> engineProcessor.isSubclassOf(processor::class) }
 }

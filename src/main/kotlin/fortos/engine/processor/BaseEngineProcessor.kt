@@ -1,7 +1,10 @@
 package fortos.engine.processor
 
-import fortos.model.step.Step
-
 interface BaseEngineProcessor<out O> {
-    fun call(input: Step): O
+    fun call(input: Any?): O
 }
+
+data class BaseEngineLambdas(
+    val runtime: () -> Unit,
+    val teardown: () -> Unit,
+)

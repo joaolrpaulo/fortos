@@ -2,23 +2,31 @@ package fortos.engine.processor.action
 
 import com.rabbitmq.client.Channel
 import fortos.configurations.RabbitMQConfiguration
+import fortos.engine.processor.BaseEngineLambdas
 import fortos.model.step.Step
+import fortos.model.step.action.RabbitMQCredentials
+import fortos.model.step.action.RabbitMQExecutionMetadata
 import fortos.model.step.action.RabbitMQStep
 import org.slf4j.LoggerFactory
 
-class RabbitMQEngineProcessor : BaseActionEngineProcessor {
+class RabbitMQEngineProcessor(
+    setupMetadata: RabbitMQCredentials
+) : BaseActionEngineProcessor {
 
     private val logger = LoggerFactory.getLogger(this::class.java)
-    private var rabbitMQPublisher: Channel? = null;
+    private val rabbitMQPublisher: Channel = RabbitMQConfiguration.publisher(setupMetadata)
 
-    override fun call(input: Step): () -> Unit {
-        val rabbitMQStep = input as RabbitMQStep
+    override fun call(input: Any?): BaseEngineLambdas {
+        val rabbitMQStep = input as RabbitMQExecutionMetadata
 
-        rabbitMQPublisher = rabbitMQPublisher ?: RabbitMQConfiguration.publisher(rabbitMQStep.credentials)
-
-        return {
-            rabbitMQPublisher?.basicPublish("", rabbitMQStep.queueName, null, "Some Message".toByteArray())
-            logger.info("Sending event")
-        }
+        return BaseEngineLambdas(
+            {
+                rabbitMQPublisher.basicPublish("", rabbitMQStep.queueName, null, "Some Message".toByteArray())
+                logger.info("Sending event")
+            },
+            {
+                if (rabbitMQPublisher.connection.isOpen) rabbitMQPublisher.connection.close()
+            }
+        )
     }
 }

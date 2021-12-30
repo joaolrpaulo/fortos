@@ -19,5 +19,7 @@ import fortos.model.step.timer.SingleTimerStep
 )
 open class Step(
     open val type: String,
-    open val workload: List<Step>?
+    open val workload: List<Step>?,
+    open val setupMetadata: Any?,
+    open val executionMetadata: Any?
 )
