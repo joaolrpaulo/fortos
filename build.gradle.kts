@@ -1,21 +1,21 @@
-val koinVersion = "2.2.2"
-val log4jVersion = "1.7.29"
+val koinVersion = "3.1.4"
+val log4jVersion = "2.17.1"
 val apacheLog4JVersion = "2.14.0"
-val kotlinxCliVersion = "0.3.1"
-val jacksonVersion = "2.12.+"
-val kotlinXCoroutinesVersion = "1.4.30"
+val kotlinxCliVersion = "0.3.4"
+val jacksonVersion = "2.13.+"
+val kotlinXCoroutinesVersion = "1.6.0"
 val mockitoKtVersion = "2.2.0"
-val junitVersion = "5.7.1"
-val rabbitmqVersion = "5.9.0"
+val junitVersion = "5.8.2"
+val rabbitmqVersion = "5.14.0"
+val kotlinJunitVersion = "1.5.32"
 
 plugins {
-    kotlin("jvm") version "1.4.30"
+    kotlin("jvm") version "1.6.10"
     id("org.jlleitschuh.gradle.ktlint") version "10.0.0"
 }
 
 repositories {
-    maven("https://kotlin.bintray.com/kotlinx")
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
@@ -23,19 +23,19 @@ dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinXCoroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-cli:$kotlinxCliVersion")
-    implementation("org.koin:koin-core:$koinVersion")
-    implementation("org.koin:koin-logger-slf4j:$koinVersion")
-    implementation("org.slf4j:slf4j-log4j12:$log4jVersion")
+    implementation("io.insert-koin:koin-core:$koinVersion")
+    implementation("io.insert-koin:koin-logger-slf4j:$koinVersion")
+    implementation("org.apache.logging.log4j:log4j-api:$log4jVersion")
+    implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
     implementation("com.rabbitmq:amqp-client:$rabbitmqVersion")
 
     // Test Dependencies
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    testImplementation("org.koin:koin-test:$koinVersion")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinJunitVersion")
+    testImplementation("io.insert-koin:koin-test-junit5:$koinVersion")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKtVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
